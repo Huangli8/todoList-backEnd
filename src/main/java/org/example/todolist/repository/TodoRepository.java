@@ -4,6 +4,8 @@ import org.example.todolist.entity.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class TodoRepository {
     @Autowired
@@ -15,5 +17,9 @@ public class TodoRepository {
 
     public void deleteAll(){
         todoJPARepository.deleteAll();
+    }
+
+    public List<Todo> findAll(){
+        return todoJPARepository.findAll();
     }
 }
