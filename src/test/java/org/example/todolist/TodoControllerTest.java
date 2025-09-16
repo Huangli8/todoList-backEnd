@@ -1,5 +1,7 @@
 package org.example.todolist;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.todolist.entity.Todo;
 import org.example.todolist.repository.TodoRepository;
 import org.example.todolist.service.TodoService;
@@ -11,7 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -49,6 +53,59 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.text").value("this is a text."))
                 .andExpect(jsonPath("$.done").value(false));
 
+    }
+
+    @Test
+    void should_return_unprocessable_entity_when_create_without_given_text() throws Exception {
+        String requestBody = """
+                {
+                   "done": false
+                }
+                """;
+        mockMvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isUnprocessableEntity());
+
+    }
+
+    @Test
+    void should_return_unprocessable_entity_when_create_given_null_text() throws Exception {
+        String requestBody = """
+                {
+                   "text": "",
+                   "done": false
+                }
+                """;
+        mockMvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isUnprocessableEntity());
+
+    }
+
+    @Test
+    void should_ignore_client_sent_id_when_create() throws Exception {
+        String requestBody = """
+        {
+           "id": 1234,
+           "text": "this is a text.",
+           "done": false
+        }
+        """;
+        MvcResult result = mockMvc.perform(post("/todos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.text").value("this is a text."))
+                .andExpect(jsonPath("$.done").value(false))
+                .andReturn();
+
+        // 解析响应体
+        String responseBody = result.getResponse().getContentAsString();
+        // 用 Jackson 解析 JSON
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(responseBody);
+        long returnedId = jsonNode.get("id").asLong();
+
+        // 断言 id 不是 1234（即不是客户端发来的 id）
+        assertNotEquals(1234L, returnedId);
     }
 
     @Test
@@ -99,7 +156,7 @@ public class TodoControllerTest {
                 """;
         mockMvc.perform(put("/todos/{id}",id).contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.text").value("this is a text after update."))
                 .andExpect(jsonPath("$.done").value(true));
     }
