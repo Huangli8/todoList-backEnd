@@ -1,6 +1,7 @@
 package org.example.todolist.controller;
 
 import org.example.todolist.exception.EmptyTextException;
+import org.example.todolist.exception.InvalidUpdateException;
 import org.example.todolist.exception.TodoNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,4 +23,11 @@ public class GlobalExceptionHandler {
     public String handleTodoNotFoundException(TodoNotFoundException e) {
         return e.getMessage();
     }
+
+    @ExceptionHandler(InvalidUpdateException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public String handleInvalidUpdateException(InvalidUpdateException e) {
+        return e.getMessage();
+    }
+
 }

@@ -103,6 +103,45 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.text").value("this is a text after update."))
                 .andExpect(jsonPath("$.done").value(true));
     }
+    @Test
+    void should_ignore_surplus_id_when_update() throws Exception{
+        CreateTodoDto todo1 = new CreateTodoDto();
+        todo1.setText("this is todo1");
+        CreateTodoDto todo2 = new CreateTodoDto();
+        todo2.setText("this is todo2");
+        Long id1=todoService.createTodo(todo1).getId();
+        Long id2=todoService.createTodo(todo1).getId();
+
+        String requestBody = """
+                {
+                  "id": %d,
+                  "text": "update todo1",
+                  "done": true
+                }
+                """.formatted(id2);
+        mockMvc.perform(put("/todos/{id}",id1).contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id1))
+                .andExpect(jsonPath("$.text").value("update todo1"))
+                .andExpect(jsonPath("$.done").value(true));
+    }
+
+
+    @Test
+    void should_return_unprocessable_entity_when_update_given_an_empty_object() throws Exception{
+        CreateTodoDto todo = new CreateTodoDto();
+        todo.setText("this is a text before update.");
+        Long id=todoService.createTodo(todo).getId();
+
+        String requestBody = """
+                {
+               
+                }
+                """;
+        mockMvc.perform(put("/todos/{id}",id).contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
 
     @Test
     void should_get_not_found_when_given_a_invalid_id() throws Exception{

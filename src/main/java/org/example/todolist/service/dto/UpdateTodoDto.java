@@ -2,7 +2,7 @@ package org.example.todolist.service.dto;
 
 public class UpdateTodoDto {
     private String text;
-    private boolean done;
+    private Boolean done;
 
     public String getText() {
         return text;
@@ -12,11 +12,11 @@ public class UpdateTodoDto {
         this.text = text;
     }
 
-    public boolean isDone() {
+    public Boolean isDone() {
         return done;
     }
 
-    public void setDone(boolean done) {
+    public void setDone(Boolean done) {
         this.done = done;
     }
 }
