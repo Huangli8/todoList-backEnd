@@ -69,4 +69,20 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$[1].done").value(false));
     }
 
+    @Test
+    void should_return_correct_todo_when_a_valid_id_given()throws Exception{
+        CreateTodoDto todo1 = new CreateTodoDto();
+        todo1.setText("this is a text 1.");
+        CreateTodoDto todo2 = new CreateTodoDto();
+        todo2.setText("this is a text 2.");
+
+        Long id2=todoService.createTodo(todo2).getId();
+
+        mockMvc.perform(get("/todos/{id}",id2).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.text").value("this is a text 2."))
+                .andExpect(jsonPath("$.done").value(false));
+    }
+
 }

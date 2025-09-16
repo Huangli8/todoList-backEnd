@@ -2,13 +2,16 @@ package org.example.todolist.service;
 
 import org.example.todolist.entity.Todo;
 import org.example.todolist.exception.EmptyTextException;
+import org.example.todolist.exception.TodoNotFoundException;
 import org.example.todolist.repository.TodoRepository;
 import org.example.todolist.service.dto.CreateTodoDto;
+import org.example.todolist.service.dto.UpdateTodoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class TodoService {
@@ -27,4 +30,15 @@ public class TodoService {
     public List<Todo> findAllTodos(){
         return todoRepository.findAll();
     }
+
+    public Todo findTodoById(Long id){
+        Optional<Todo> todo = todoRepository.findById(id);
+        if(todo.isEmpty()){
+            throw new TodoNotFoundException("Todo with id:%d is not found.".formatted(id));
+        }
+        return todo.get();
+    }
+//    public Todo updateTodo(Long id, UpdateTodoDto updateTodoDto){
+//
+//    }
 }

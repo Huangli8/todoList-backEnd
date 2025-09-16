@@ -3,6 +3,7 @@ package org.example.todolist.controller;
 import org.example.todolist.entity.Todo;
 import org.example.todolist.service.TodoService;
 import org.example.todolist.service.dto.CreateTodoDto;
+import org.example.todolist.service.dto.UpdateTodoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,16 @@ public class TodoController {
     public List<Todo> findAll(){
         return todoService.findAllTodos();
     }
+
+    @GetMapping("/todos/{id}")
+    public ResponseEntity<Todo> findById(@PathVariable Long id){
+        return ResponseEntity.ok(todoService.findTodoById(id));
+    }
+
+//    @PutMapping("/todos/{id}")
+//    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoDto todo){
+//
+//
+//    }
 
 }
