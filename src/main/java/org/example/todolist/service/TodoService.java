@@ -49,4 +49,12 @@ public class TodoService {
         todoRepository.save(itemToUpdate.get());
         return itemToUpdate.get();
     }
+
+    public void deleteTodo(Long id){
+        Optional<Todo> itemToDelete = todoRepository.findById(id);
+        if(itemToDelete.isEmpty()){
+            throw new TodoNotFoundException("Todo with id:%d is not found.".formatted(id));
+        }
+        todoRepository.delete(itemToDelete.get());
+    }
 }

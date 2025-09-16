@@ -1,5 +1,6 @@
 package org.example.todolist.controller;
 
+import lombok.Data;
 import org.example.todolist.entity.Todo;
 import org.example.todolist.service.TodoService;
 import org.example.todolist.service.dto.CreateTodoDto;
@@ -34,6 +35,11 @@ public class TodoController {
     @PutMapping("/todos/{id}")
     public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoDto todo){
         return ResponseEntity.ok(todoService.updateTodo(id,todo));
+    }
+
+    @DeleteMapping("/todos/{id}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long id){
+        return ResponseEntity.noContent().build();
     }
 
 }

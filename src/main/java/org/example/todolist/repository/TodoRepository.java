@@ -27,4 +27,8 @@ public class TodoRepository {
     public Optional<Todo> findById(Long id){
         return todoJPARepository.findById(id);
     }
+
+    public void delete(Todo todo){
+        todoJPARepository.delete(todo);
+    }
 }

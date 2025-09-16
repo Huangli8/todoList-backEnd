@@ -116,6 +116,17 @@ public class TodoControllerTest {
                 .andExpect(status().isNotFound());
         mockMvc.perform(put("/todos/{id}",-1).contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/todos/{id}",-1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_return_no_content_when_delete_todo_given_valid_id()throws Exception{
+        CreateTodoDto todo = new CreateTodoDto();
+        todo.setText("this is a text before update.");
+        Long id=todoService.createTodo(todo).getId();
+        mockMvc.perform(delete("/todos/{id}",id).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 
 }
