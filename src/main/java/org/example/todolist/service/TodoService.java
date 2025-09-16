@@ -38,7 +38,15 @@ public class TodoService {
         }
         return todo.get();
     }
-//    public Todo updateTodo(Long id, UpdateTodoDto updateTodoDto){
-//
-//    }
+
+    public Todo updateTodo(Long id, UpdateTodoDto updateTodoDto){
+        Optional<Todo> itemToUpdate = todoRepository.findById(id);
+        if(itemToUpdate.isEmpty()){
+            throw new TodoNotFoundException("Todo with id:%d is not found.".formatted(id));
+        }
+        itemToUpdate.get().setText(updateTodoDto.getText());
+        itemToUpdate.get().setDone(updateTodoDto.isDone());
+        todoRepository.save(itemToUpdate.get());
+        return itemToUpdate.get();
+    }
 }

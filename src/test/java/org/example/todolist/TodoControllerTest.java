@@ -85,4 +85,23 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.done").value(false));
     }
 
+    @Test
+    void should_update_todo_when_given_a_valid_id() throws Exception{
+        CreateTodoDto todo = new CreateTodoDto();
+        todo.setText("this is a text before update.");
+        Long id=todoService.createTodo(todo).getId();
+
+        String requestBody = """
+                {
+                   "text": "this is a text after update.",
+                   "done": true
+                }
+                """;
+        mockMvc.perform(put("/todos/{id}",id).contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.text").value("this is a text after update."))
+                .andExpect(jsonPath("$.done").value(true));
+    }
+
 }
