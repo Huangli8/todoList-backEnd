@@ -104,4 +104,18 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.done").value(true));
     }
 
+    @Test
+    void should_get_not_found_when_given_a_invalid_id() throws Exception{
+        String requestBody = """
+                {
+                   "text": "this is a text after update.",
+                   "done": true
+                }
+                """;
+        mockMvc.perform(get("/todos/{id}",-1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(put("/todos/{id}",-1).contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isNotFound());
+    }
+
 }
