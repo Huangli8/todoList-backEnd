@@ -2,34 +2,19 @@ name: Main Branch CI/CD to Dev
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 permissions:
   contents: read
+  issues: read
   checks: write
   pull-requests: write
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: test
-          MYSQL_USER: root
-          MYSQL_PASSWORD: 123456
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
       - name: Checkout code
@@ -50,6 +35,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: Run tests
+        run: ./gradlew test
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
@@ -96,7 +84,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew jacocoTestReport sonar --info
+        run: ./gradlew build sonar --info
 
   deploy-dev:
     needs: [test, sonar]
@@ -132,7 +120,6 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Deploy to Railway App Service
-        if: github.event_name != 'pull_request'
         run: |
           echo "Starting deployment to Railway..."
           railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
@@ -143,13 +130,13 @@ jobs:
       - name: Health Check
         run: |
           echo "Starting health check (5 minutes max)..."
-
+          
           SERVICE_URL="${{ secrets.SERVICE_BASE_URL }}"
-
+          
           # Wait 60 seconds for service startup
           echo "Waiting 60 seconds for service to start..."
           sleep 60
-
+          
           # 5-minute health check with 30-second intervals
           for i in {1..10}; do
             echo "Health check attempt $i/10..."
