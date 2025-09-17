@@ -47,6 +47,9 @@ jobs:
           path: build/test-results/test/*.xml
           reporter: java-junit
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
   sonar:
     needs: test
     runs-on: ubuntu-latest
