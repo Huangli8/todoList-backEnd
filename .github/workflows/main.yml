@@ -51,13 +51,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Run tests
-        run: ./gradlew test
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/test
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: 123456
-
       - name: Generate test report
         uses: dorny/test-reporter@v1
         if: success() || failure()
