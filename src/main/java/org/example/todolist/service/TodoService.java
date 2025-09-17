@@ -45,7 +45,7 @@ public class TodoService {
         if (itemToUpdate.isEmpty()) {
             throw new TodoNotFoundException("Todo with id:%d is not found.".formatted(id));
         }
-        if (updateTodoDto.isDone() == null && updateTodoDto.getText() == null) {
+        if (updateTodoDto.isDone() == null && (updateTodoDto.getText() == null || updateTodoDto.getText().isBlank()) ) {
             throw new InvalidUpdateException();
         }
         if (updateTodoDto.getText() != null) {
